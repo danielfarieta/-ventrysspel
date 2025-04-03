@@ -1,1 +1,37 @@
+class item:
+
+    def __init__(self, it_name, it_damage):
+        self.it_damage = it_damage
+        self.it_name = it_name
+
+baseballbat = item("Baseballbat", 4)
+knife = item("Knife", 6)
+sword = item("Sword", 12)
+sledgehammer = item("Sledgehammer", 22)
+
+class enemy:
+
+    def __init__(self, en_name, en_strength):
+        self.en_strength = en_strength
+        self.en_name = en_name
+
+wolf = enemy("Wolf", 2)
+bear = enemy("Bear", 5)
+werewolf = enemy("Werewolf", 10)
+griffin = enemy("Griffin", 20)
+
+
+class player:
+    
+    def __init__(self, name, level, strength):
+        self.name = name
+        self.level = level
+        self.strength = strength
+
+
+camp = player(input("Write your characters name => "), 4, 5)
+print(camp.name)
+
+    
+
 
