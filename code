@@ -1,3 +1,8 @@
+import random as rand
+doors_entred = 0
+
+inventory = []
+
 class item:
 
     def __init__(self, it_name, it_damage):
@@ -21,17 +26,182 @@ werewolf = enemy("Werewolf", 10)
 griffin = enemy("Griffin", 20)
 
 
-class player:
+class players:
     
-    def __init__(self, name, level, strength):
+    def __init__(self, name, level, strength, health):
         self.name = name
         self.level = level
         self.strength = strength
+        self.health = health
 
+def chest_found(player, inventory):
 
-camp = player(input("Write your characters name => "), 4, 5)
-print(camp.name)
+    print("CHEST FOUND!")
+    print(
+        """
+       ┌──────────────────-┐
+       │ █████████████████ │
+       │ ██░░░░░░░░░░░░░██ │
+       │ ██░░  ▓▓▓▓▓▓ ░░██ │
+       │ ██░░  ▓▓██▓▓ ░░██ │
+       │ ██░░   ▓▓▓▓  ░░██ │
+       │ ██░░    ██   ░░██ │
+       │ ██░░         ░░██ │
+       │ ██░░░░░░░░░░░░░██ │
+       │ █████████████████ │
+       └───────────────────┘
+       """
+        )
 
+    print("   Press Enter to Open Chest!")
+    input("")
+
+    if player.level in [1,2]:
+
+        if baseballbat not in inventory:
+            print("You got a baseballbat!")
+            inventory.append(baseballbat)
+
+        else:
+            print("You found an even better baseballbat! Its damage increased by +1")
+            baseballbat.it_damage += 1
+
+    if player.level in [3,4]:
+
+        if knife not in inventory:
+            print("You got a knife!")
+            inventory.append(knife)
+
+        else:
+            print("You found an even better knife! Its damage increased by +2")
+            knife.it_damage += 2
+
+    if player.level in [5,6]:
+
+        if sword not in inventory:
+            print("You got a sword!")
+            inventory.append(sword)
+
+        else:
+            print("You found an even better sword! Its damage increased by +2")
+            sword.it_damage += 2
+
+    if player.level in [7,8]:
+
+        if sledgehammer not in inventory:
+            print("You got a sledgehammer!")
+            inventory.append(sledgehammer)
+
+        else:
+            print("You found an even better sledgehammer! Its damage increased by +5")
+            sword.it_damage += 5
+
+def game_menu(player, doors_entred, item):
     
+    print(
+        """
+===============================================================================
+
+                        VÄLJ VAD DU VILL GÖRA 
+                     ===============================
+
+            Inspect                                    Actions
+        ================                          =================
+         1.Inventory                                4.Go Forward
+
+         2.Stats                                    5.Go right
+
+         3.Upgrade                                  6.Go left
+
+"""
+)
+
+    action = int(input("=>"))
+    print("===============================================================================")
+    
+    if action == 1:
+
+        print(inventory)
+
+        if baseballbat in inventory:
+            print("yay")
+
+        else:
+            print("nah")
+        
+
+        
+        
+
+    if action == 2:
+        print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}" )
+        game_menu(player, doors_entred, item)
+
+    if action == 3:
+        pass
+
+    if action in [4,5,6]:
+
+        doors_entred += 1
+        door_result = rand.randint(0,5)
+
+        if door_result in [1,2]:
+            chest_found(player, inventory)
+            print(f"Entred {doors_entred} / 20 doors")
+            game_menu(player, doors_entred, item)
+
+        elif door_result in [2,4]:
+            print("Monster found")
+            print(f"Entred {doors_entred} / 20 doors")
+            game_menu(player, doors_entred, item)
+
+        else:
+            print("You fell in spikes")
+            print(f"Entred {doors_entred} / 20 doors")
+            game_menu(player, doors_entred, item)
+
+        
+
+        
 
 
+
+def SPEL():
+
+    print("Välkommen! Ta dig igenom 20 dörrar för att vinna spelet!")
+    print("Börja genom att skriva in ditt namn!")
+
+    player = players(input(" => "), 1, 1, 10)
+    game_menu(player, doors_entred, item)
+
+
+
+
+
+
+
+print(
+"""
+===============================================================================
+      ██╗  ██╗
+         
+       █████╗ ██╗   ██╗███████╗███╗   ██ ████████╗ ██╗   ██╗ ██████╗
+      ██╔══██╗██║   ██║██╔════╝████╗  ██║╚══██╔══╝ ╚██╗ ██╔╝ ██╔══██╗
+      ███████║██║   ██║█████╗  ██╔██╗ ██║   ██║     ╚████╔╝  ██████╔╝
+      ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║      ╚██╔╝   ██╔══██╗
+      ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║       ██║    ██║  ██║
+      ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝    ╚═╝  ╚═╝
+
+
+                     ███████╗ ██████╗ ███████╗██╗
+                   ██╔════╝   ██╔══██╗██╔════╝██║
+                     █████╗   ██████╔╝█████╗  ██║
+                     ╚════██╗ ██╔═══╝ ██╔══╝  ██║
+                    ██████╔╝  ██║     ███████╗███████╗
+                    ╚═════╝   ╚═╝     ╚══════╝╚══════╝
+================================================================================                
+"""
+)
+
+
+SPEL()
