@@ -2,6 +2,8 @@ import random as rand
 doors_entred = 0
 
 inventory = []
+equipped_item = None
+total_strength = 0
 
 class item:
 
@@ -96,7 +98,14 @@ def chest_found(player, inventory):
             print("You found an even better sledgehammer! Its damage increased by +5")
             sword.it_damage += 5
 
-def game_menu(player, doors_entred, item):
+def game_menu(player, doors_entred, item, equipped_item, total_strength):
+
+    if equipped_item:
+        total_strength = player.strength + equipped_item.it_damage
+    else:
+        total_strength = player.strength
+        
+        
     
     print(
         """
@@ -121,21 +130,49 @@ def game_menu(player, doors_entred, item):
     
     if action == 1:
 
-        print(inventory)
+        i = 1
+        if len(inventory) > 0:
 
-        if baseballbat in inventory:
-            print("yay")
+            print(
+                """
+                           INVENTORY
+               =================================
+               """
+                )
+            
+            for item in inventory:
+                print(f"                 {i}. {item.it_name} ({item.it_damage} damage)\n")
+                i += 1
+
+            print("To equip: type the number of the item you want to equip")
+
+            while True:
+                equip = int(input("=> "))
+                if equip in range (len(inventory) + 1) and equip > 0:
+                    equipped_item = inventory[(equip - 1)]
+                    print(f"you equipped {equipped_item.it_name}")
+                    game_menu(player, doors_entred, item, equipped_item, total_strength)
+                    break
+
+                else:
+                    print("Item was not found... try again")
 
         else:
-            print("nah")
+            print("You have nothing in your inventory....")
+        game_menu(player, doors_entred, item, equipped_item, total_strength)
         
 
         
         
 
     if action == 2:
-        print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}" )
-        game_menu(player, doors_entred, item)
+        if equipped_item:
+            print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}\n\nEquipped Item: {equipped_item.it_name}({equipped_item.it_damage} damage)\n\nTotal Strength: {total_strength} damage")
+        else:
+            print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}\n\nEquipped Item: None\n\nTotal Strength: {total_strength} damage")
+            
+            
+        game_menu(player, doors_entred, item, equipped_item, total_strength)
 
     if action == 3:
         pass
@@ -148,17 +185,21 @@ def game_menu(player, doors_entred, item):
         if door_result in [1,2]:
             chest_found(player, inventory)
             print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item)
+            game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         elif door_result in [2,4]:
             print("Monster found")
             print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item)
+            game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         else:
             print("You fell in spikes")
             print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item)
+            game_menu(player, doors_entred, item, equipped_item, total_strength)
+
+    if action == 7:
+        player.level += 2
+        game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         
 
@@ -172,7 +213,7 @@ def SPEL():
     print("Börja genom att skriva in ditt namn!")
 
     player = players(input(" => "), 1, 1, 10)
-    game_menu(player, doors_entred, item)
+    game_menu(player, doors_entred, item, equipped_item, total_strength)
 
 
 
