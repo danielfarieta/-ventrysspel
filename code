@@ -4,6 +4,7 @@ doors_entred = 0
 inventory = []
 equipped_item = None
 total_strength = 0
+skill_points = 0
 
 class item:
 
@@ -98,47 +99,41 @@ def chest_found(player, inventory):
             print("You found an even better sledgehammer! Its damage increased by +5")
             sword.it_damage += 5
 
-def monster_appears(player, enemy):
-
-    if player.level <= 2:
-        monster_odds = rand.randint(1,2)
-
-    elif player.level <= 4:
-        monster_odds = rand.randint(2,3)
-
-    elif player.level <= 6:
-        monster_odds = rand.randint(3,4)
-
+def monster_appears(player, enemy, total_strength):
+    
+    level = player.level
+    strength = total_strength
+   
+    if level <= 2:
+        monster_odds = rand.randint(1, 2)
+        
+    elif level <= 4:
+        monster_odds = rand.randint(2, 3)
+        
+    elif level <= 6:
+        monster_odds = rand.randint(3, 4)
+        
     else:
-        monster_odds = rand.randint(1,10)
+        monster_odds = rand.randint(1, 10)
 
     if monster_odds == 1:
         print("A wolf Appeard!")
         print(r"""
 
- /\     /\  
-{  `---'  } 
-{  O   O  } 
-{   ^ ^   }       Wolf
- \  ===  }    =============== 
-  `-----'____   Strength: 2
- /       \    \_  
-{  |   |    }\_\_   
-|  \__/   |/ / \_\ 
- \__/___/(_/    \`-._ 
+     /\     /\  
+    {  `---'  } 
+    {  O   O  } 
+    {   ^ ^   }       Wolf
+     \  ===  }    =============== 
+      `-----'____   Strength: 2
+     /       \    \_  
+    {  |   |    }\_\_   
+    |  \__/   |/ / \_\ 
+     \__/___/(_/    \`-._ 
                  `~~~`
 
     """)
-
-        if total_strength > wolf.en_strength:
-            print("Your stronger! You Won!")
-
-        elif total_strength < wolf.en_strength:
-            print("Your still too weak! You Lost")
-
-        else:
-            print("Your strengths are equal! Neither one wins")
-
+        enemy = wolf
 
     elif monster_odds == 2:
         print("A Bear Appeard!")
@@ -156,31 +151,47 @@ def monster_appears(player, enemy):
   \  \      (      )
    \__\_____)_____/
    """)
- 
+        enemy = bear
 
     elif monster_odds == 3:
         print("A werewolf appeared")
         print(r"""
-         ___   ___
-        /   \_/   \
-       /           \     Werewolf
-      |   O     O   |  =============== 
-      |     ^       |   Strength: 10
-      |    ___      |    
-       \___________/
-         /     \
-        /       \
-       /|       |\
-      / |  |_|  | \
-     /  |  | |  |  \
-    (   |  | |  |   )
-     \_/|  | |  |\_/
-        |__| |__|
+
+        /\      /\
+       (  `---'  )
+       (  O   O  )
+       /   .-.   \
+      /   (---)   \         Werewolf
+     /     ---     \     ==============
+    /  /|       |\  \      Strength:10
+   (  / |       | \  )
+  / _|  |       |  |_ \
+ (   |  |   #   |  |   )
+ |   |  |_______|  |   |
+  /     | |    | |    \
+ /.-'   | |    | |   '-.\
+      __| |____| |__
 
         """)
 
+        enemy = werewolf
+
     elif monster_odds in range(4,10):
         print("A griffin Appeared")
+        enemy = griffin
+
+    if strength > enemy.en_strength:
+        print("You're stronger! You won!")
+        print("You earned a skill point and leveled up!")
+        player.level += 1
+        
+    elif strength < enemy.en_strength:
+        print("You're too weak! You lost!")
+        print("you took 3 damage!")
+        player.health -= 3
+    else:
+        print("It's a draw!")
+        print("Nothing happened!")
 
 def game_menu(player, doors_entred, item, equipped_item, total_strength):
 
@@ -249,11 +260,17 @@ def game_menu(player, doors_entred, item, equipped_item, total_strength):
         
 
     if action == 2:
+        print(f"\nName: {player.name}")
+        print("======================")
+        print(f"Level: {player.level}")
+        print(f"Strength: {player.strength}")
+        print(f"Health: {player.health}")
         if equipped_item:
-            print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}\n\nEquipped Item: {equipped_item.it_name}({equipped_item.it_damage} damage)\n\nTotal Strength: {total_strength} damage")
+            print(f"Equipped: {equipped_item.it_name} ({equipped_item.it_damage} dmg)")
+            print(f"Total Strength: {total_strength}")
         else:
-            print(f"Name: {player.name} \n===============\n\nLevel: {player.level}\n\nStrength:{player.strength}\n\nHealth: {player.health}\n\nEquipped Item: None\n\nTotal Strength: {total_strength} damage")
-            
+            print("Equipped: None")
+            print(f"Total Strength: {total_strength}")            
             
         game_menu(player, doors_entred, item, equipped_item, total_strength)
 
@@ -271,12 +288,13 @@ def game_menu(player, doors_entred, item, equipped_item, total_strength):
             game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         elif door_result in [2,4]:
-            monster_appears(player, enemy)
+            monster_appears(player, enemy, total_strength)
             print(f"Entred {doors_entred} / 20 doors")
             game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         else:
-            print("You fell in spikes")
+            print("You fell in spikes! You lost 1 hp")
+            player.health -= 1
             print(f"Entred {doors_entred} / 20 doors")
             game_menu(player, doors_entred, item, equipped_item, total_strength)
 
@@ -294,12 +312,6 @@ def SPEL():
 
     player = players(input(" => "), 1, 1, 10)
     game_menu(player, doors_entred, item, equipped_item, total_strength)
-
-
-
-
-
-
 
 print(
 """
