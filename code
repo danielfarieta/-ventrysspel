@@ -98,33 +98,116 @@ def chest_found(player, inventory):
             print("You found an even better sledgehammer! Its damage increased by +5")
             sword.it_damage += 5
 
+def monster_appears(player, enemy):
+
+    if player.level <= 2:
+        monster_odds = rand.randint(1,2)
+
+    elif player.level <= 4:
+        monster_odds = rand.randint(2,3)
+
+    elif player.level <= 6:
+        monster_odds = rand.randint(3,4)
+
+    else:
+        monster_odds = rand.randint(1,10)
+
+    if monster_odds == 1:
+        print("A wolf Appeard!")
+        print(r"""
+
+ /\     /\  
+{  `---'  } 
+{  O   O  } 
+{   ^ ^   }       Wolf
+ \  ===  }    =============== 
+  `-----'____   Strength: 2
+ /       \    \_  
+{  |   |    }\_\_   
+|  \__/   |/ / \_\ 
+ \__/___/(_/    \`-._ 
+                 `~~~`
+
+    """)
+
+        if total_strength > wolf.en_strength:
+            print("Your stronger! You Won!")
+
+        elif total_strength < wolf.en_strength:
+            print("Your still too weak! You Lost")
+
+        else:
+            print("Your strengths are equal! Neither one wins")
+
+
+    elif monster_odds == 2:
+        print("A Bear Appeard!")
+        print(r"""
+
+      (()__(()
+      /      \
+     ( /    \ \      Bear
+     \ o o    /  ==============  
+     (_()_)__/ \  Strength: 5    
+    / _,==.____ \  
+   (   |--|      )    
+   /\_.|__|'-.__/\_
+  / (        /     \
+  \  \      (      )
+   \__\_____)_____/
+   """)
+ 
+
+    elif monster_odds == 3:
+        print("A werewolf appeared")
+        print(r"""
+         ___   ___
+        /   \_/   \
+       /           \     Werewolf
+      |   O     O   |  =============== 
+      |     ^       |   Strength: 10
+      |    ___      |    
+       \___________/
+         /     \
+        /       \
+       /|       |\
+      / |  |_|  | \
+     /  |  | |  |  \
+    (   |  | |  |   )
+     \_/|  | |  |\_/
+        |__| |__|
+
+        """)
+
+    elif monster_odds in range(4,10):
+        print("A griffin Appeared")
+
 def game_menu(player, doors_entred, item, equipped_item, total_strength):
 
     if equipped_item:
         total_strength = player.strength + equipped_item.it_damage
     else:
         total_strength = player.strength
-        
-        
+            
     
-    print(
-        """
+    print(r"""
+
 ===============================================================================
 
                         VÄLJ VAD DU VILL GÖRA 
                      ===============================
 
-            Inspect                                    Actions
-        ================                          =================
-         1.Inventory                                4.Go Forward
+            Inspect                                 Actions
+        ===================                   ===================
+         1. Inventory                           4. Go Forward
+         2. Stats                               5. Go Right
+         3. Upgrade                             6. Go Left
 
-         2.Stats                                    5.Go right
-
-         3.Upgrade                                  6.Go left
-
-"""
-)
-
+===============================================================================
+""")
+              
+              
+    
     action = int(input("=>"))
     print("===============================================================================")
     
@@ -188,7 +271,7 @@ def game_menu(player, doors_entred, item, equipped_item, total_strength):
             game_menu(player, doors_entred, item, equipped_item, total_strength)
 
         elif door_result in [2,4]:
-            print("Monster found")
+            monster_appears(player, enemy)
             print(f"Entred {doors_entred} / 20 doors")
             game_menu(player, doors_entred, item, equipped_item, total_strength)
 
@@ -200,12 +283,9 @@ def game_menu(player, doors_entred, item, equipped_item, total_strength):
     if action == 7:
         player.level += 2
         game_menu(player, doors_entred, item, equipped_item, total_strength)
+   
 
-        
-
-        
-
-
+    
 
 def SPEL():
 
