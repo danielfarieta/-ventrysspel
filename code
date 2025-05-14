@@ -1,44 +1,41 @@
 import random as rand
-doors_entred = 0
 
 inventory = []
 equipped_item = None
 total_strength = 0
-skill_points = 0
 
-class item:
-
-    def __init__(self, it_name, it_damage):
+class item:                                                   
+    def __init__(self, it_name, it_damage, base_damage):   #Klassar Items och dess atribut
         self.it_damage = it_damage
         self.it_name = it_name
+        self.base_damage = base_damage
 
-baseballbat = item("Baseballbat", 4)
-knife = item("Knife", 6)
-sword = item("Sword", 12)
-sledgehammer = item("Sledgehammer", 22)
+baseballbat = item("Baseballbat", 4, 4)   #Listar Items 
+knife = item("Knife", 6, 6)
+sword = item("Sword", 12, 12)
+sledgehammer = item("Sledgehammer", 20, 20)
 
 class enemy:
-
-    def __init__(self, en_name, en_strength):
+    def __init__(self, en_name, en_strength):   #Klassar Enemys och dess atribut
         self.en_strength = en_strength
         self.en_name = en_name
 
-wolf = enemy("Wolf", 2)
+wolf = enemy("Wolf", 2)      #Listar Enemys
 bear = enemy("Bear", 5)
 werewolf = enemy("Werewolf", 10)
 griffin = enemy("Griffin", 20)
+dragon = enemy("Dragon", 30)
 
 
-class players:
-    
+class players:       #Klassarm Spelarens Atribut      
     def __init__(self, name, level, strength, health):
         self.name = name
         self.level = level
         self.strength = strength
         self.health = health
+        self.skillpoints = 0
 
-def chest_found(player, inventory):
-
+def chest_found(player, inventory):   #Funktion ifall kista hittas
     print("CHEST FOUND!")
     print(
         """
@@ -55,87 +52,74 @@ def chest_found(player, inventory):
        └───────────────────┘
        """
         )
-
     print("   Press Enter to Open Chest!")
     input("")
 
-    if player.level in [1,2]:
-
-        if baseballbat not in inventory:
-            print("You got a baseballbat!")
-            inventory.append(baseballbat)
-
-        else:
-            print("You found an even better baseballbat! Its damage increased by +1")
-            baseballbat.it_damage += 1
-
-    if player.level in [3,4]:
-
-        if knife not in inventory:
-            print("You got a knife!")
-            inventory.append(knife)
-
-        else:
-            print("You found an even better knife! Its damage increased by +2")
-            knife.it_damage += 2
-
-    if player.level in [5,6]:
-
-        if sword not in inventory:
-            print("You got a sword!")
-            inventory.append(sword)
-
-        else:
-            print("You found an even better sword! Its damage increased by +2")
-            sword.it_damage += 2
-
-    if player.level in [7,8]:
-
-        if sledgehammer not in inventory:
-            print("You got a sledgehammer!")
-            inventory.append(sledgehammer)
-
-        else:
-            print("You found an even better sledgehammer! Its damage increased by +5")
-            sword.it_damage += 5
-
-def monster_appears(player, enemy, total_strength):
-    
-    level = player.level
-    strength = total_strength
-   
-    if level <= 2:
-        monster_odds = rand.randint(1, 2)
+    if player.level == 1:           #Olika Items kan hittas beroende på Spelarens Level
+        found_item = baseballbat
+        dmg_boost = 1
         
-    elif level <= 4:
-        monster_odds = rand.randint(2, 3)
-        
-    elif level <= 6:
-        monster_odds = rand.randint(3, 4)
-        
+    elif player.level in [2,3]:
+        found_item = knife
+        dmg_boost = 2
+
+    elif player.level in [4,5,6]:
+        found_item = sword
+        dmg_boost = 2
+
     else:
-        monster_odds = rand.randint(1, 10)
+        found_item = sledgehammer
+        dmg_boost = 4
 
-    if monster_odds == 1:
+    inventory_name = [i.it_name for i in inventory]   
+    
+    if found_item.it_name not in inventory_name:    #Kollar om items med samma namn kan hittas i listan
+        print(f"You got a {found_item.it_name}!")   #Om nej så får spelaren ett ny Item
+        inventory.append(found_item)
+        print("Equip it in inventory!")
+
+    else:
+        print(f"You found a ever better {found_item.it_name}! It's damage increased by {dmg_boost}!")
+        found_item.it_damage += dmg_boost            #Om ja så uppgraderas spelarens nuvarande Item
+        
+
+def enemy_appears(player, total_strength):           #Funktion ifall Enemy hittas bakom dörren
+   
+    if player.level <= 2:                            #Olika enemies med olika chans att hittas kan mötas beroende på spelarens Level
+        enemy_chance = rand.randint(1, 2)
+       
+    elif player.level <= 4:
+        enemy_chance = rand.randint(2, 3)
+       
+    elif player.level <= 6:
+        enemy_chance = rand.randint(3, 4)
+       
+    else:
+        enemy_chance = rand.randint(1, 10)        
+
+    if enemy_chance == 1:
         print("A wolf Appeard!")
         print(r"""
 
-     /\     /\  
-    {  `---'  } 
-    {  O   O  } 
-    {   ^ ^   }       Wolf
-     \  ===  }    =============== 
-      `-----'____   Strength: 2
-     /       \    \_  
-    {  |   |    }\_\_   
-    |  \__/   |/ / \_\ 
-     \__/___/(_/    \`-._ 
-                 `~~~`
+                        |\---/|
+                       /  , , |
+                  __.-'|  / \ /
+         __ ___.-'        ._O|
+      .-'  '        :      _/      Wolf
+     / ,    .        .     |  ===============
+    :  ;    :        :   _/     Strenght: 2
+    |  |   .'     __:   /
+    |  :   /'----'| \  |
+    \  |\  |      | /| |
+     '.'| /       || \ |
+     | /|.'       '.l \\_
+     || ||             '-'  
+     '-''-'  
 
     """)
-        enemy = wolf
+        current_enemy = wolf
 
-    elif monster_odds == 2:
+    elif enemy_chance == 2:
         print("A Bear Appeard!")
         print(r"""
 
@@ -151,9 +135,9 @@ def monster_appears(player, enemy, total_strength):
   \  \      (      )
    \__\_____)_____/
    """)
-        enemy = bear
+        current_enemy = bear
 
-    elif monster_odds == 3:
+    elif enemy_chance == 3:
         print("A werewolf appeared")
         print(r"""
 
@@ -173,39 +157,92 @@ def monster_appears(player, enemy, total_strength):
       __| |____| |__
 
         """)
+        current_enemy = werewolf
 
-        enemy = werewolf
-
-    elif monster_odds in range(4,10):
+    elif enemy_chance in range(4,10):
         print("A griffin Appeared")
-        enemy = griffin
+        print(r"""
+                 ______,---'__,---'
+             _,-'---_---__,---'
+      /_    (,  ---____',
+     /  ',,   `, ,-'
+    ;/)   ,',,_/,'           Griffin
+    | /\   ,.'//\         ==============
+    `-` \ ,,'    `.        Strength: 20
+         `',   ,-- `.
+         '/ / |      `,         _
+         //'',.\_    .\\      ,{==>-
+      __//   __;_`-  \ `;.__,;'
 
-    if strength > enemy.en_strength:
+      """)
+        current_enemy = griffin 
+
+    if total_strength > current_enemy.en_strength:           #Om spelarens totala styrka är mer än enemy, vinner spelaren fighten
         print("You're stronger! You won!")
-        print("You earned a skill point and leveled up!")
+        print("You earned a skill point and leveled up!")    #Om spelaren vinner, levlar den upp samt vinner ett skillpoint
         player.level += 1
-        
-    elif strength < enemy.en_strength:
-        print("You're too weak! You lost!")
-        print("you took 3 damage!")
+        player.skillpoints += 1
+       
+    elif total_strength < current_enemy.en_strength:
+        print("You're too weak! You lost!")                  #Om spelaren förlorar, förlorar den 3 health points
+        print("you took damage! -3 Hp")
         player.health -= 3
     else:
-        print("It's a draw!")
+        print("It's a draw!")                                #Om spelaren och enemy har samma stytrka händer inget, oavgjort
         print("Nothing happened!")
 
-def game_menu(player, doors_entred, item, equipped_item, total_strength):
+def boss_battle(player, total_strength):                    #Funktion för bossfight, (visar sig efter 20 dörrar har passerats)
+   print(r"""
 
-    if equipped_item:
-        total_strength = player.strength + equipped_item.it_damage
-    else:
-        total_strength = player.strength
+                              A DRAGON APPEARS
+             ===================================================
+                              Strength: 30
+                                                               
+             /||             ^               ^             ||\                
+            / \\__          //               \\          __// \               
+           /  |_  \         | \   /     \   / |         /  _|  \              
+          /  /  \  \         \  \/ \---/ \/  /         /  /     \             
+         /  /    |  \         \  \/\   /\/  /         /  |       \            
+        /  /     \   \__       \ ( 0\ /0 ) /       __/   /        \           
+       /  /       \     \___    \ \_/|\_/ /    ___/     /\         \          
+      /  /         \_)      \___ \/-\|/-\/ ___/      (_/\ \      `  \         
+     /  /           /\__)       \/  oVo  \/       (__/   ` \      `  \        
+    /  /           /,   \__)    (_/\ _ /\_)    (__/         `      \  \       
+   /  '           //       \__)  (__V_V__)  (__/                    \  \      
+  /  '  '        /'           \   |{___}|   /         .              \  \     
+ /  '  /        /              \/ |{___}| \/\          `              \  \    
+/     /        '       .        \/{_____}\/  \          \    `         \  \   
+     /                ,         /{_______}\   \          \    \         \     
+                     /         /{___/_\___}\   `          \    `
+
+========================================================================================
+""")
+
+
+   if total_strength >= dragon.en_strength:                          #Om spelararen total strength är mer än eller lika med draktens vinner spelaren spelet, annars förlorar den
+       print("You are STRONG enough! You Beat The DRAGON!")
+       game_won()
+   else:
+       print("You are still too WEAK! The boss kills you!")
+       game_over()
+
+def game_menu(player, doors_entred, inventory, equipped_item, total_strength):   #Funktion för självaste spel menyn
+     
+    while True:
+
+        if player.health <= 0:   #Om spelarens health är noll, förlorar den
+            game_over()
+            return
             
-    
-    print(r"""
+        if equipped_item:        #Beräknar spelarens totala styrka
+            total_strength = player.strength + equipped_item.it_damage
+        else:
+            total_strength = player.strength
 
+        print(r"""
 ===============================================================================
 
-                        VÄLJ VAD DU VILL GÖRA 
+                        VÄLJ VAD DU VILL GÖRA
                      ===============================
 
             Inspect                                 Actions
@@ -214,104 +251,185 @@ def game_menu(player, doors_entred, item, equipped_item, total_strength):
          2. Stats                               5. Go Right
          3. Upgrade                             6. Go Left
 
+
 ===============================================================================
 """)
-              
-              
-    
-    action = int(input("=>"))
-    print("===============================================================================")
-    
-    if action == 1:
+        try:
+            action = int(input("=> "))
+        except ValueError:
+            print("Please enter a number between 1 - 6.")
+            continue
 
-        i = 1
-        if len(inventory) > 0:
+        print("===============================================================================")
 
-            print(
-                """
-                           INVENTORY
-               =================================
-               """
-                )
+        if action == 1:       #Funktion för inventory
+            i = 1
+            if len(inventory) > 0:
+                print(
+                    """
+                               INVENTORY
+                   =================================
+                   """
+                    )
+                for item in inventory:
+                    print(f"                 {i}. {item.it_name} ({item.it_damage} damage)\n")  #Items listas
+                    i += 1
+                print(f"                 {i}. Exit\n")
+
+                print("To equip: type the number of the item you want to equip")
+
+                while True:
+                    try:
+                        equip = int(input("=> "))              #Items kan utrustas genom att skriva in olika tal
+                        if 1 <= equip <= len(inventory):
+                            equipped_item = inventory[equip - 1]
+                            print(f"You equipped {equipped_item.it_name}")
+                            break
+                        elif equip == i:
+                            break
+                        else:                                    
+                            print("Item was not found... try again")
+                    except ValueError:
+                        print("Enter a number....")
+            else:
+                print("You have nothing in your inventory....")
+
+        elif action == 2:   #Funktion för stats, spelarens statistik printas ut
+            print(f"\nName: {player.name}")
+            print("======================")
+            print(f"Level: {player.level}")
+            print(f"Strength: {player.strength} dmg")
+            print(f"Health: {player.health}")
+            print(f"Skillpoints: {player.skillpoints}")
+            if equipped_item:
+                print(f"Equipped: {equipped_item.it_name} ({equipped_item.it_damage} dmg)")
+                print(f"Total Strength: {total_strength}")
+            else:
+                print("Equipped: None")
+                print(f"Total Strength: {total_strength}")
+
+        elif action == 3:   #Funktion där skillpoints kan används för att uppgradera hälsa eller damage
+            if player.skillpoints > 0:
+                print("""
+                               Upgrade
+                   =================================
+                        1. Upgrade Health (+2 hp)
+
+                        2. Upgrade Strength (+2 dmg)
+
+                        3. Exit
+
+                        """)
+               
+                print("To upgrade: type the number of the upgrade you want to choose")
+                while True:
+                    try:
+                        upgrade = int(input("=> "))
+                       
+                        if upgrade == 1:
+                            player.health += 2
+                            player.skillpoints -= 1
+                            print("Health Upgraded! + 2 hp!")
+                            break
+                       
+                        elif upgrade == 2:
+                            player.strength += 2
+                            player.skillpoints -= 1
+                            print("Strength Upgraded! +2 dmg!")
+                            break
+                       
+                        elif upgrade == 3:
+                            break
+
+                        else:
+                            print("Choose a valid option!")
+                    except ValueError:
+                        print("Enter a number...")
+            else:
+                print("You have no skillpoints...")
+               
+
+        elif action in [4, 5, 6]:   #Funktion för om en dörr passeras
             
-            for item in inventory:
-                print(f"                 {i}. {item.it_name} ({item.it_damage} damage)\n")
-                i += 1
+            if doors_entred >= 20:  #Kollar om spelaren passerat 20 dörrar (för boss fight)
+                boss_battle(player, total_strength)
+                return
 
-            print("To equip: type the number of the item you want to equip")
+            doors_entred += 1
+            door_result = rand.randint(1, 6)
 
-            while True:
-                equip = int(input("=> "))
-                if equip in range (len(inventory) + 1) and equip > 0:
-                    equipped_item = inventory[(equip - 1)]
-                    print(f"you equipped {equipped_item.it_name}")
-                    game_menu(player, doors_entred, item, equipped_item, total_strength)
-                    break
-
-                else:
-                    print("Item was not found... try again")
+            if door_result <= 2:             #50% chans att monster visas, 33& chans för kista, 16.7% chans för spikar
+                chest_found(player, inventory)
+            elif door_result <= 5:
+                enemy_appears(player, total_strength)
+            else:
+                print("You fell in spikes! You lost 1 hp")
+                player.health -= 1
+            print(f"Entred {doors_entred} / 20 doors")
 
         else:
-            print("You have nothing in your inventory....")
-        game_menu(player, doors_entred, item, equipped_item, total_strength)
-        
+            print("Please enter a number between 1 - 6.")
 
-        
-        
+def SPEL(): #Funktion för att starta spelet
 
-    if action == 2:
-        print(f"\nName: {player.name}")
-        print("======================")
-        print(f"Level: {player.level}")
-        print(f"Strength: {player.strength}")
-        print(f"Health: {player.health}")
-        if equipped_item:
-            print(f"Equipped: {equipped_item.it_name} ({equipped_item.it_damage} dmg)")
-            print(f"Total Strength: {total_strength}")
-        else:
-            print("Equipped: None")
-            print(f"Total Strength: {total_strength}")            
-            
-        game_menu(player, doors_entred, item, equipped_item, total_strength)
-
-    if action == 3:
-        pass
-
-    if action in [4,5,6]:
-
-        doors_entred += 1
-        door_result = rand.randint(0,5)
-
-        if door_result in [1,2]:
-            chest_found(player, inventory)
-            print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item, equipped_item, total_strength)
-
-        elif door_result in [2,4]:
-            monster_appears(player, enemy, total_strength)
-            print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item, equipped_item, total_strength)
-
-        else:
-            print("You fell in spikes! You lost 1 hp")
-            player.health -= 1
-            print(f"Entred {doors_entred} / 20 doors")
-            game_menu(player, doors_entred, item, equipped_item, total_strength)
-
-    if action == 7:
-        player.level += 2
-        game_menu(player, doors_entred, item, equipped_item, total_strength)
-   
-
-    
-
-def SPEL():
-
-    print("Välkommen! Ta dig igenom 20 dörrar för att vinna spelet!")
+    print("Välkommen! Ta dig genom 20 dörrar och nå 30 Strength för att döda bossen och vinna spelet!")
     print("Börja genom att skriva in ditt namn!")
 
     player = players(input(" => "), 1, 1, 10)
-    game_menu(player, doors_entred, item, equipped_item, total_strength)
+
+    baseballbat.it_damage = baseballbat.base_damage    #Nollställer items damage till deras ursprungliga vid ny runda
+    knife.it_damage = knife.base_damage
+    sword.it_damage = sword.base_damage
+    sledgehammer.it_damage = sledgehammer.base_damage
+    
+    game_menu(player = player, doors_entred=0, inventory=[], equipped_item=None, total_strength=0)  #Statistik nollställs, och inventory rensas vid ny runda
+
+def play_again():  #Funktion ifall spelaren vill spela igen efter vunnit eller förlorat
+    print("Vill du försöka igen? (y / n)")
+    while True:
+        play_again = input("=> ").lower()
+
+        if play_again == "y":
+            print("===============================================================================\n")
+            SPEL()
+            break
+        elif play_again == "n":
+            print("Tack för att du spelade!")
+            exit()
+            break
+        else:
+            print("Please enter a valid input!")
+
+def game_over():  #Funktion för Game Over, spelaren förlorar
+    print(
+"""
+====================================================================================
+
+       ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ 
+      ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗
+      ██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝
+      ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║▄▄ ██║██║   ██║██╔══╝  ██╔══██╗
+      ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝╚██████╔╝███████╗██║  ██║
+       ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚══▀▀═╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝
+=====================================================================================
+""")
+    print("You Lost! No health left")
+    play_again()
+
+def game_won(): #Funkrion för spelaren om den vunnit
+    print("""
+====================================================================================
+
+      ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ ██████╗ ███╗   ██╗
+      ██║   ██║██╔═══██╗██║   ██║    ██║    ██║██╔═══██╗████╗  ██║
+      ██║   ██║██║   ██║██║   ██║    ██║ █╗ ██║██║   ██║██╔██╗ ██║
+      ╚██╗ ██╔╝██║   ██║██║   ██║    ██║███╗██║██║   ██║██║╚██╗██║
+       ╚████╔╝ ╚██████╔╝╚██████╔╝    ╚███╔███╔╝╚██████╔╝██║ ╚████║
+        ╚██═╝   ╚═════╝  ╚═════╝      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═══╝
+         ██║
+====================================================================================
+""")
+    play_again()
 
 print(
 """
@@ -335,6 +453,4 @@ print(
 ================================================================================                
 """
 )
-
-
 SPEL()
