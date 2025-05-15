@@ -159,7 +159,7 @@ def enemy_appears(player, total_strength):           #Funktion ifall Enemy hitta
         """)
         current_enemy = werewolf
 
-    elif enemy_chance in range(4,10):
+    elif enemy_chance > 3:
         print("A griffin Appeared")
         print(r"""
                  ______,---'__,---'
